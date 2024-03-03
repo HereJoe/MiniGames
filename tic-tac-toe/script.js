@@ -105,6 +105,7 @@ class Game extends React.Component {
   }
 
   render() {
+    let status;
     if (this.state.winner) {
       status = "Winner: " + this.state.winner;
     } else {
@@ -116,10 +117,12 @@ class Game extends React.Component {
       if (i === his.length - 1) {
         return null;
       }
-      const desc = i ? "Go to move #" + i : "Go to game start";
+      const desc = i ? "Go to step #" + i : "Go to game start";
       return /*#__PURE__*/(
         React.createElement("li", { key: "li" + i }, /*#__PURE__*/
-        React.createElement("button", { onClick: () => this.jumpTo(i) }, desc)));
+        React.createElement("button", { className: "move-button", onClick: () => this.jumpTo(i) },
+        desc)));
+
 
 
     });
