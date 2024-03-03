@@ -8,10 +8,11 @@ body {
   align-items: flex-start;
   height: 100vh;
   margin-top: 100px;
+  min-width: 350px;
+  position: relative;
 }
 .game-board {
   width: 200px;
-  margin-right: 20px;
 }
 .board-row {
   display: flex;
@@ -33,6 +34,10 @@ body {
 .square:hover {
   background-color: #ddd;
 }
+
+.game-info {
+  min-width: 150px;
+}
 .game-info ol {
   list-style-type: none;
   padding-left: 0;
@@ -43,7 +48,6 @@ body {
   margin-bottom: 5px;
   left: 0px;
 }
-
 .move-button {
   background-color: #4caf50;
   color: white;
@@ -53,4 +57,42 @@ body {
 }
 .move-button:hover {
   background-color: #45a049;
+}
+/*action*/
+.occupied {
+  background-color: red !important;
+  animation: shake 0.2s;
+}
+
+@keyframes shake {
+  0% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-5px);
+  }
+  50% {
+    transform: translateX(5px);
+  }
+  75% {
+    transform: translateX(-5px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+@keyframes victoryAnimation {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.victory {
+  animation: victoryAnimation 1s ease;
 }

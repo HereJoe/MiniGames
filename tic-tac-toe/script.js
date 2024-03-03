@@ -1,7 +1,9 @@
 class Square extends React.Component {
   render() {
+    const { value, isOccupied } = this.props;
+    const className = `square ${isOccupied ? "occupied" : ""}`;
     return /*#__PURE__*/(
-      React.createElement("button", { className: "square", onClick: () => this.props.onClick() },
+      React.createElement("button", { className: className, onClick: () => this.props.onClick() },
       this.props.value));
 
 
@@ -30,10 +32,14 @@ function calcWinner(squares) {
 
 class Board extends React.Component {
   renderSquare(i) {
+    const { squares, onClick, isSquareOccupied } = this.props;
     return /*#__PURE__*/(
       React.createElement(Square, {
-        value: this.props.squares[i],
-        onClick: () => this.props.onClick(i) }));
+        value: squares[i],
+        isOccupied: isSquareOccupied[i],
+        onClick: () => {
+          onClick(i);
+        } }));
 
 
   }
@@ -67,6 +73,7 @@ class Game extends React.Component {
     this.state = {
       xIsNext: true,
       winner: null,
+      isSquareOccupied: Array(9).fill(false),
       history: [
       {
         squares: Array(9).fill(null) }] };
@@ -74,17 +81,28 @@ class Game extends React.Component {
 
 
   }
+  vibrate(i) {
+    let isSquareOccupied = this.state.isSquareOccupied.slice();
+    isSquareOccupied[i] = true;
+    this.setState({ isSquareOccupied: isSquareOccupied });
+    setTimeout(() => {
+      isSquareOccupied = this.state.isSquareOccupied.slice();
+      isSquareOccupied[i] = false;
+      this.setState({ isSquareOccupied: isSquareOccupied });
+    }, 100);
+  }
 
   handleClick(i) {
     const his = this.state.history;
     const cur = his[his.length - 1];
     if (cur.squares[i] || this.state.winner) {
+      this.vibrate(i);
       return;
     }
+
     const squares = cur.squares.slice();
     squares[i] = this.state.xIsNext ? "X" : "O";
     const winner = calcWinner(squares);
-    console.log("winner:" + winner);
     this.setState({
       history: his.concat([
       {
@@ -98,18 +116,23 @@ class Game extends React.Component {
 
   jumpTo(step) {
     this.setState({
+      winner: null,
       history: this.state.history.slice(0, step + 1),
       xIsNext: step % 2 === 0 });
 
-    console.log(step);
   }
 
   render() {
     let status;
-    if (this.state.winner) {
-      status = "Winner: " + this.state.winner;
+    const { winner, xIsNext } = this.state;
+    if (winner) {
+      status = "Winner: " + winner;
     } else {
-      status = "Next player: " + (this.state.xIsNext ? "X" : "O");
+      status = "Next player: " + (xIsNext ? "X" : "O");
+    }
+    if (winner) {
+      const gameBoardElement = document.querySelector(".game-board");
+      gameBoardElement.classList.add("victory");
     }
     const his = this.state.history;
     const cur = his[his.length - 1];
@@ -131,6 +154,7 @@ class Game extends React.Component {
       React.createElement("div", { className: "game-board" }, /*#__PURE__*/
       React.createElement(Board, {
         squares: cur.squares,
+        isSquareOccupied: this.state.isSquareOccupied,
         xIsNext: this.state.xIsNext,
         onClick: i => this.handleClick(i) })), /*#__PURE__*/
 
