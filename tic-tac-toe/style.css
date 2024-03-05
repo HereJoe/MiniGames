@@ -34,7 +34,9 @@ body {
 .square:hover {
   background-color: #ddd;
 }
-
+.square.winner {
+  background-color: #4caf50;
+}
 .game-info {
   min-width: 150px;
 }
@@ -56,14 +58,14 @@ body {
   cursor: pointer;
 }
 .move-button:hover {
-  background-color: #45a049;
-}
-/*action*/
-.occupied {
-  background-color: red !important;
-  animation: shake 0.2s;
+  background-color: #45a04;
 }
 
+/*action*/
+.square.occupied {
+  background-color: red;
+  animation: shake 0.2s;
+}
 @keyframes shake {
   0% {
     transform: translateX(0);

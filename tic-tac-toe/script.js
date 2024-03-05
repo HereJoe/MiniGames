@@ -1,7 +1,9 @@
 class Square extends React.Component {
   render() {
-    const { value, isOccupied } = this.props;
-    const className = `square ${isOccupied ? "occupied" : ""}`;
+    const { value, isOccupied, iswinner } = this.props;
+    const className = `square ${iswinner ? "winner" : ""} ${
+    isOccupied ? "occupied" : ""
+    }`;
     return /*#__PURE__*/(
       React.createElement("button", { className: className, onClick: () => this.props.onClick() },
       this.props.value));
@@ -10,33 +12,14 @@ class Square extends React.Component {
   }}
 
 
-function calcWinner(squares) {
-  const seqs = [
-  [0, 1, 2],
-  [3, 4, 5],
-  [6, 7, 8],
-  [0, 3, 6],
-  [1, 4, 7],
-  [2, 5, 8],
-  [0, 4, 8],
-  [2, 4, 6]];
-
-  for (let i = 0; i < seqs.length; i++) {
-    const [a, b, c] = seqs[i];
-    if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-      return squares[a];
-    }
-  }
-  return null;
-}
-
 class Board extends React.Component {
   renderSquare(i) {
-    const { squares, onClick, isSquareOccupied } = this.props;
+    const { squares, onClick, winner, winInd, occupied } = this.props;
     return /*#__PURE__*/(
       React.createElement(Square, {
         value: squares[i],
-        isOccupied: isSquareOccupied[i],
+        isOccupied: occupied[i],
+        iswinner: winInd && winInd.includes(i),
         onClick: () => {
           onClick(i);
         } }));
@@ -73,7 +56,8 @@ class Game extends React.Component {
     this.state = {
       xIsNext: true,
       winner: null,
-      isSquareOccupied: Array(9).fill(false),
+      winInd: null,
+      occupied: Array(9).fill(false),
       history: [
       {
         squares: Array(9).fill(null) }] };
@@ -82,16 +66,39 @@ class Game extends React.Component {
 
   }
   vibrate(i) {
-    let isSquareOccupied = this.state.isSquareOccupied.slice();
-    isSquareOccupied[i] = true;
-    this.setState({ isSquareOccupied: isSquareOccupied });
+    let occupied = this.state.occupied.slice();
+    occupied[i] = true;
+    this.setState({ occupied: occupied });
     setTimeout(() => {
-      isSquareOccupied = this.state.isSquareOccupied.slice();
-      isSquareOccupied[i] = false;
-      this.setState({ isSquareOccupied: isSquareOccupied });
+      occupied = this.state.occupied.slice();
+      occupied[i] = false;
+      this.setState({ occupied: occupied });
     }, 100);
   }
+  calcWinner(squares) {
+    const seqs = [
+    [0, 1, 2],
+    [3, 4, 5],
+    [6, 7, 8],
+    [0, 3, 6],
+    [1, 4, 7],
+    [2, 5, 8],
+    [0, 4, 8],
+    [2, 4, 6]];
 
+    for (let i = 0; i < seqs.length; i++) {
+      const [a, b, c] = seqs[i];
+      if (
+      squares[a] &&
+      squares[a] === squares[b] &&
+      squares[a] === squares[c])
+      {
+        this.state.winInd = seqs[i];
+        return squares[a];
+      }
+    }
+    return null;
+  }
   handleClick(i) {
     const his = this.state.history;
     const cur = his[his.length - 1];
@@ -102,7 +109,7 @@ class Game extends React.Component {
 
     const squares = cur.squares.slice();
     squares[i] = this.state.xIsNext ? "X" : "O";
-    const winner = calcWinner(squares);
+    const winner = this.calcWinner(squares);
     this.setState({
       history: his.concat([
       {
@@ -124,7 +131,7 @@ class Game extends React.Component {
 
   render() {
     let status;
-    const { winner, xIsNext } = this.state;
+    const { winner, winInd, xIsNext, occupied } = this.state;
     if (winner) {
       status = "Winner: " + winner;
     } else {
@@ -154,8 +161,9 @@ class Game extends React.Component {
       React.createElement("div", { className: "game-board" }, /*#__PURE__*/
       React.createElement(Board, {
         squares: cur.squares,
-        isSquareOccupied: this.state.isSquareOccupied,
-        xIsNext: this.state.xIsNext,
+        occupied: occupied,
+        xIsNext: xIsNext,
+        winInd: winInd,
         onClick: i => this.handleClick(i) })), /*#__PURE__*/
 
 
