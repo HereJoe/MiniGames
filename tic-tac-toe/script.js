@@ -107,7 +107,6 @@ class Game extends React.Component {
   }
     
   handleBoardSizeChange(size){
-	console.log("size:",size);
 	this.setState({
       xIsNext: true,
       winner: null,
@@ -124,7 +123,6 @@ class Game extends React.Component {
 
 
 	async vibrate(x, y) {
-		console.log("vibrate:",x,y);
 	  return new Promise((resolve) => {
 		let occupied = this.state.occupied.map((row) => row.map((cell) => cell));
 		occupied[x][y] = true;
@@ -198,7 +196,6 @@ class Game extends React.Component {
 	componentDidUpdate(prevProps, prevState) {
 		const { winner } = this.state;
 		if (winner && !prevState.winner) {
-			console.log("componentDidUpdate");
 		  const gameBoardElement = document.querySelector(".game-board");
 		  gameBoardElement.classList.remove("victory");
 		  void gameBoardElement.offsetWidth;
